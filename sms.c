@@ -54,7 +54,24 @@ int main()
 
 
 void allStudentRecord(){
-    printf("All students Here");
+    printf("All students Here\n\n");
+
+    FILE *stud = fopen("student.txt", "r");
+
+    if(stud == NULL){
+        printf("No student Data Exist");
+        return;
+    }else{
+        int ch =fgetc(stud);
+
+        while (ch != EOF)
+        {
+            printf("%c", ch);
+            ch =fgetc(stud);
+        }
+            fclose(stud);
+    }
+
 };
 
 
@@ -89,7 +106,7 @@ void addStudent(){
     printf("Enter Student CGPA: \n");
     scanf("%f", &s.cgpa);
 
-    fprintf(stud, "Name = %s, Roll = %d, CGPA = %f \n", s.name, s.roll, s.cgpa);
+    fprintf(stud, "Name = %s, Roll = %d, CGPA = %.2f \n", s.name, s.roll, s.cgpa);
 }
 
     printf("Record added successfully!\n");
