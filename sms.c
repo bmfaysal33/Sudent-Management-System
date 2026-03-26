@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <conio.h>
 #include <stdlib.h>
 
 // Functionalities
@@ -60,25 +59,41 @@ int main()
 // All student
 void allStudentRecord()
 {
-    printf("All students Here\n\n");
+   
 
     FILE *stud = fopen("student.txt", "r");
+
+    struct student s;
+
+    int found = 0;
 
     if (stud == NULL)
     {
         printf("No student Data Exist");
         return;
     }
+
+    while (fscanf(stud, " %[^,],%d,%f", s.name, &s.roll, &s.cgpa) != EOF)
+    {
+
+        if (found == 0)
+        {
+            printf("\n%-30s %-10s %-10s\n", "Name", "Roll", "CGPA");
+            printf("---------------------------------------------------\n");
+        }
+        printf("%-30s %-10d %-10.2f\n", s.name, s.roll, s.cgpa);
+        found = 1;
+    }
+
+    fclose(stud);
+
+      if (found == 0)
+    {
+        printf("The file is empty. No records to show!\n");
+    }
     else
     {
-        int ch = fgetc(stud);
-
-        while (ch != EOF)
-        {
-            printf("%c", ch); // printf first cause its already assigned in top
-            ch = fgetc(stud);
-        }
-        fclose(stud);
+        printf("---------------------------------------------------\n");
     }
 };
 
@@ -94,8 +109,6 @@ void addStudent()
     }
     else
     {
-
-        printf("Student exist.\n\n");
 
         struct student s;
 
@@ -115,7 +128,7 @@ void addStudent()
         printf("Enter Student CGPA: \n");
         scanf("%f", &s.cgpa);
 
-        fprintf(stud, "%s %d %.2f\n", s.name, s.roll, s.cgpa);
+        fprintf(stud, "%s,%d,%.2f\n", s.name, s.roll, s.cgpa);
     }
 
     printf("Record added successfully!\n");
@@ -137,12 +150,13 @@ void searchStudent()
     }
     else
     {
-        while (fscanf(stud, "%s %d %f", s.name, &s.roll, &s.cgpa) != EOF)
+        while (fscanf(stud, " %[^,],%d,%f", s.name, &s.roll, &s.cgpa) != EOF)
         {
             if (s.roll == roll)
             {
-                printf("Name: %s \n Roll: %d \n CGPA: %.2f", s.name, s.roll, s.cgpa);
+                printf("\nName: %s \n Roll: %d \n CGPA: %.2f \n", s.name, s.roll, s.cgpa);
                 found = 1;
+                break;
             }
         }
 
@@ -150,11 +164,56 @@ void searchStudent()
         {
             printf("\nStudent with Roll %d Not found!\n", roll);
         }
+        fclose(stud);
     }
 };
 
 // Delete a student
 void deleteStudent()
 {
-    printf("Delete students Here");
+
+    FILE *stud, *temp;
+    stud = fopen("student.txt", "r");
+    temp = fopen("temp.txt", "w");
+
+    struct student s;
+
+    int roll, found = 0;
+
+    if (stud == NULL)
+    {
+
+        printf("No file exist. ");
+        return;
+    }
+
+    printf("Enter roll: ");
+    scanf("%d", &roll);
+
+    while (fscanf(stud, " %[^,],%d,%f", s.name, &s.roll, &s.cgpa) != EOF)
+    {
+        if (roll == s.roll)
+        {
+            found = 1;
+        }
+        else
+        {
+            fprintf(temp, "%s,%d,%.2f\n", s.name, s.roll, s.cgpa);
+        }
+    }
+
+    fclose(stud);
+    fclose(temp);
+
+    remove("student.txt");
+    rename("temp.txt", "student.txt");
+
+    if (found)
+    {
+        printf("\nRecord with Roll %d deleted successfully!\n", roll);
+    }
+    else
+    {
+        printf("\nRecord with Roll %d not found!\n", roll);
+    }
 };
